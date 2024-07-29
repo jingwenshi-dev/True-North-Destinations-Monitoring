@@ -35,7 +35,7 @@ while True:
             found = False
 
         if not_found and not found:
-            print("NO ROOM AVAILABLE")
+            pass
         elif found and not not_found:
             print("ROOM AVAILABLE")
         else:
