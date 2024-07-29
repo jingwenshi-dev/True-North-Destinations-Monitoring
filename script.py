@@ -8,10 +8,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
+RED = "\033[91m"
+GREEN = "\033[92m"
+YELLOW = "\033[93m"
+RESET = "\033[0m"
+
 def send_email():
     sender = "jingwensteven.shi@gmail.com"
     password = ""
-    recipients = [sender]
+    recipients = [sender, 'huangdankun@gmail.com']
 
     msg = MIMEText("https://www.truenorthdestinations.ca/book")
     msg['Subject'] = "泡泡屋有空房啦！"
@@ -53,11 +58,12 @@ while True:
             found = False
 
         if not_found and not found:
-            send_email()
+            print(f"{RED}ROOM NOT AVAILABLE{RESET}")
         elif found and not not_found:
-            print("ROOM AVAILABLE")
+            print(f"{GREEN}ROOM AVAILABLE{RESET}")
+            send_email()
         else:
-            print("STATUS UNKNOWN")
+            print(f"{YELLOW}STATUS UNKNOWN{RESET}")
 
     finally:
         driver.quit()
