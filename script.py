@@ -5,8 +5,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
-check_in_date = "10/27/2024"
-check_out_date = "10/29/2024"
+# Date format in the origional website HTML code
+check_in_date = "2024-07-31"
+check_out_date = "2024-08-02"
 
 driver = webdriver.Chrome()
 
@@ -19,16 +20,17 @@ try:
     driver.implicitly_wait(3)
 
     check_in = driver.find_element(By.NAME, "search_start_date")
+    check_in.click()
     check_in.clear()
     check_in.send_keys(check_in_date)
     driver.implicitly_wait(3)
 
     check_out = driver.find_element(By.NAME, "search_end_date")
+    check_out.click()
     check_out.clear()
     check_out.send_keys(check_out_date)
     driver.implicitly_wait(3)
 
-    print(check_in, check_out)
     time.sleep(5)
 
     # search_button = driver.find_element(By.NAME, "check_availability")
