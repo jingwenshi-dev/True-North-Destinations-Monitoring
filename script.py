@@ -1,10 +1,28 @@
 import time
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+
+def send_email():
+    sender = "jingwensteven.shi@gmail.com"
+    password = ""
+    recipients = [sender]
+
+    msg = MIMEText("https://www.truenorthdestinations.ca/book")
+    msg['Subject'] = "泡泡屋有空房啦！"
+    msg['From'] = "jingwensteven.shi@gmail.com"
+    msg['To'] = ', '.join(recipients)
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
+       smtp_server.login(sender, password)
+       smtp_server.sendmail(sender, recipients, msg.as_string())
+
+    print("Message sent!")
 
 while True:
     driver = webdriver.Chrome()
@@ -35,7 +53,7 @@ while True:
             found = False
 
         if not_found and not found:
-            pass
+            send_email()
         elif found and not not_found:
             print("ROOM AVAILABLE")
         else:
@@ -44,5 +62,5 @@ while True:
     finally:
         driver.quit()
 
-    # Run every 10 minutes
-    time.sleep(600)
+    # Run every 5 minutes
+    time.sleep(290)
