@@ -1,44 +1,48 @@
+import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time
+from selenium.common.exceptions import TimeoutException
 
-# Date format in the origional website HTML code
-check_in_date = "2024-07-31"
-check_out_date = "2024-08-02"
+while True:
+    driver = webdriver.Chrome()
 
-driver = webdriver.Chrome()
+    try:
+        driver.get("https://www.truenorthdestinations.ca/book")
+        driver.implicitly_wait(3)
 
-try:
-    driver.get("https://www.truenorthdestinations.ca/book")
-    driver.implicitly_wait(3)
+        iframe = driver.find_elements(By.TAG_NAME, 'iframe')[0]
+        driver.switch_to.frame(iframe)
+        driver.implicitly_wait(3)
 
-    iframe = driver.find_elements(By.TAG_NAME, 'iframe')[0]
-    driver.switch_to.frame(iframe)
-    driver.implicitly_wait(3)
+        check_in = driver.find_element(By.NAME, "search_start_date")
+        check_in.click()
 
-    check_in = driver.find_element(By.NAME, "search_start_date")
-    check_in.click()
-    check_in.clear()
-    check_in.send_keys(check_in_date)
-    driver.implicitly_wait(3)
+        try:
+            not_found = WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'day') and contains(@class, 'default') and contains(@class, 'disabled')]/p[text()='29']"))
+            )
+        except TimeoutException:
+            not_found = False
 
-    check_out = driver.find_element(By.NAME, "search_end_date")
-    check_out.click()
-    check_out.clear()
-    check_out.send_keys(check_out_date)
-    driver.implicitly_wait(3)
+        try:
+            found = WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'day') and contains(@class, 'default')]/p[text()='29']/following-sibling::div[contains(@class, 'dot')]"))
+            )
+        except TimeoutException:
+            found = False
 
-    time.sleep(5)
+        if not_found and not found:
+            print("NO ROOM AVAILABLE")
+        elif found and not not_found:
+            print("ROOM AVAILABLE")
+        else:
+            print("STATUS UNKNOWN")
 
-    # search_button = driver.find_element(By.NAME, "check_availability")
-    # search_button.click()
+    finally:
+        driver.quit()
 
-    # results = driver.find_element(By.CLASS_NAME, "av_roomtype")
-    # print(results.text)
-
-finally:
-    # Close the WebDriver
-    driver.quit()
+    # Run every 10 minutes
+    time.sleep(600)
