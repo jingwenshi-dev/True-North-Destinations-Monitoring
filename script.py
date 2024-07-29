@@ -3,20 +3,16 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time
 
-# Update these with your check-in and check-out dates
 check_in_date = "10/27/2024"
 check_out_date = "10/29/2024"
 
-# Set up the WebDriver (replace 'chromedriver' with the path to your WebDriver if necessary)
 driver = webdriver.Chrome()
 
 try:
     driver.get("https://www.truenorthdestinations.ca/book")
 
-    # Wait until the iframe is available and switch to it
-    iframe = driver.find_element(By.TAG_NAME, "iframe")
+    iframe = driver.find_elements(By.TAG_NAME, 'iframe')[0]
     driver.switch_to.frame(iframe)
 
     elements = driver.find_elements(By.TAG_NAME, "input")
