@@ -35,33 +35,36 @@ while True:
     driver = webdriver.Chrome(options=options)
 
     driver.get("https://www.truenorthdestinations.ca/book")
-    driver.implicitly_wait(3)
+    driver.implicitly_wait(5)
 
     iframe = driver.find_elements(By.TAG_NAME, 'iframe')[0]
     driver.switch_to.frame(iframe)
-    driver.implicitly_wait(3)
+    driver.implicitly_wait(5)
 
-    check_in = driver.find_element(By.NAME, "search_start_date")
+    check_in = driver.find_element(By.XPATH, "//button[@data-testid='landing-search-panel-date-picker-checkin-input']")
     check_in.click()
+    driver.implicitly_wait(5)
+
+    room_available = None
 
     try:
-        found = driver.find_element(By.XPATH, "//div[contains(@class, 'css-ocg6bg') and .//div[contains(@class, '2024-08')] and .//div[@class='day default']/p[text()='29'] and .//div[@class='day default']/div[@class='dot']]")
+        august_month = driver.find_element(By.XPATH, "//div[@data-testid='calendar-month-august']")
     except NoSuchElementException:
-        found = None
-    try:
-        not_found = driver.find_element(By.XPATH, "//div[contains(@class, 'css-ocg6bg') and .//div[contains(@class, '2024-08')] and .//div[@class='day default disabled']/p[text()='29']]")
-    except NoSuchElementException:
-        not_found = None
+        august_month = None
 
-    if not_found and not found:
-        print(f"{RED}ROOM NOT AVAILABLE{RESET}")
-    elif found and not not_found:
+    if august_month:
+        try:
+            room_available = august_month.find_element(By.XPATH, ".//div[@data-testid='day-2024-08-27-restrictions-indicator']")
+        except NoSuchElementException:
+            room_available = False
+
+    if room_available:
         print(f"{GREEN}ROOM AVAILABLE{RESET}")
         send_email()
+    elif room_available is None:
+        print(f"{YELLOW}ROOM AVAILABILITY UNKNOWN{RESET}")
     else:
-        print("found", found)
-        print("not_found", not_found)
-        print(f"{YELLOW}STATUS UNKNOWN{RESET}")
+        print(f"{RED}ROOM NOT AVAILABLE{RESET}")
 
     driver.quit()
 
